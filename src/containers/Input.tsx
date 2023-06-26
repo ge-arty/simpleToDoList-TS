@@ -7,6 +7,7 @@ interface InputProps {
 export default function Input(props: InputProps): JSX.Element {
   const { setTask } = props;
   const [inputValue, setInputValue] = useState<string>("");
+  console.log(`component render`);
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);

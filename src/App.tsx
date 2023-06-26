@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Tasks from "./containers/Tasks";
 import Finished from "./containers/Finished";
-
 import "./App.css";
 import Input from "./containers/Input";
 
@@ -13,11 +12,22 @@ interface Task {
 
 function App(): JSX.Element {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [finishedTasks, setFinishedTasks] = useState<Task[]>([]);
 
+  // Component will Mount Data
+  useEffect(() => {
+    const baseTasks: Task[] = [
+      { id: 1, task: "breakfast", isFinished: false },
+      { id: 2, task: "coding", isFinished: false },
+      { id: 3, task: "Play a Game!", isFinished: false },
+      { id: 4, task: "Workout", isFinished: true },
+    ];
+    setTasks(baseTasks);
+  }, []);
+
+  // Adding Tasks to Do
   const addTask = (task: string) => {
     const newTask: Task = {
-      id: tasks.length + finishedTasks.length + 1,
+      id: tasks.length + 1,
       task: task,
       isFinished: false,
     };
@@ -25,56 +35,34 @@ function App(): JSX.Element {
     setTasks([...tasks, newTask]);
   };
 
+  // Deleting to Do task or Finished Task
   const deleteTask = (taskId: number) => {
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
   };
 
-  const deleteFinishedTask = (taskId: number) => {
-    const updatedFinishedTasks = finishedTasks.filter(
-      (task) => task.id !== taskId
-    );
-    setFinishedTasks(updatedFinishedTasks);
-  };
-
-  const moveToFinished = (taskId: number) => {
-    const taskToMove = tasks.find((task) => task.id === taskId);
-    if (taskToMove) {
-      taskToMove.isFinished = true;
-      const updatedTasks = tasks.filter((task) => task.id !== taskId);
-      setTasks(updatedTasks);
-      setFinishedTasks([...finishedTasks, taskToMove]);
-    }
-  };
-
-  const moveToTasks = (taskId: number) => {
-    const taskToMove = finishedTasks.find((task) => task.id === taskId);
-    if (taskToMove) {
-      taskToMove.isFinished = false;
-      const updatedFinishedTasks = finishedTasks.filter(
-        (task) => task.id !== taskId
-      );
-      setFinishedTasks(updatedFinishedTasks);
-      setTasks([...tasks, taskToMove]);
-    }
+  // Moving Task to Finished or opposite
+  const moveTask = (taskId: number, isFinished: boolean) => {
+    setTasks((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) => {
+        if (task.id === taskId) {
+          return {
+            ...task,
+            isFinished: !isFinished,
+          };
+        }
+        return task;
+      });
+      return updatedTasks;
+    });
   };
 
   return (
     <div className="to-do-container">
       <Input setTask={addTask} />
       <div className="flex-container">
-        <Tasks
-          tasks={tasks}
-          deleteTask={deleteTask}
-          moveToFinished={moveToFinished}
-          moveToTasks={moveToTasks}
-        />
-        <Finished
-          tasks={finishedTasks}
-          deleteTask={deleteFinishedTask}
-          moveToTasks={moveToTasks}
-          moveToFinished={moveToFinished}
-        />
+        <Tasks tasks={tasks} deleteTask={deleteTask} moveTask={moveTask} />
+        <Finished tasks={tasks} deleteTask={deleteTask} moveTask={moveTask} />
       </div>
     </div>
   );

@@ -5,12 +5,12 @@ interface TaskProps {
     isFinished: boolean;
   };
   deleteTask: (taskId: number) => void;
-  moveToFinished: (taskId: number) => void;
-  moveToTasks: (taskId: number) => void;
+
+  moveTask: (taskId: number, isFinished: boolean) => void;
 }
 
 export default function Task(props: TaskProps): JSX.Element {
-  const { task, deleteTask, moveToFinished, moveToTasks } = props;
+  const { task, deleteTask, moveTask } = props;
 
   return (
     <div className="task-container">
@@ -24,17 +24,9 @@ export default function Task(props: TaskProps): JSX.Element {
         >
           Delete
         </button>
-
-        {task.isFinished ? (
-          <button onClick={() => moveToTasks(task.id)}>to Tasks</button>
-        ) : (
-          <button
-            className="task-btn__back-tasks"
-            onClick={() => moveToFinished(task.id)}
-          >
-            Finished
-          </button>
-        )}
+        <button onClick={() => moveTask(task.id, task.isFinished)}>
+          {task.isFinished ? "to Tasks" : "to Finished"}
+        </button>
       </div>
     </div>
   );
