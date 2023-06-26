@@ -1,3 +1,5 @@
+import React from "react";
+
 interface TaskProps {
   task: {
     id: number;
@@ -5,11 +7,10 @@ interface TaskProps {
     isFinished: boolean;
   };
   deleteTask: (taskId: number) => void;
-
   moveTask: (taskId: number, isFinished: boolean) => void;
 }
 
-export default function Task(props: TaskProps): JSX.Element {
+function Task(props: TaskProps): JSX.Element {
   const { task, deleteTask, moveTask } = props;
 
   return (
@@ -31,3 +32,5 @@ export default function Task(props: TaskProps): JSX.Element {
     </div>
   );
 }
+
+export default React.memo(Task);

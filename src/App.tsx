@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Tasks from "./containers/Tasks";
 import Finished from "./containers/Finished";
 import "./App.css";
@@ -32,17 +32,16 @@ function App(): JSX.Element {
       isFinished: false,
     };
 
-    setTasks([...tasks, newTask]);
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   // Deleting to Do task or Finished Task
-  const deleteTask = (taskId: number) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-  };
+  const deleteTask = useCallback((taskId: number) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  }, []);
 
   // Moving Task to Finished or opposite
-  const moveTask = (taskId: number, isFinished: boolean) => {
+  const moveTask = useCallback((taskId: number, isFinished: boolean) => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) => {
         if (task.id === taskId) {
@@ -55,7 +54,7 @@ function App(): JSX.Element {
       });
       return updatedTasks;
     });
-  };
+  }, []);
 
   return (
     <div className="to-do-container">
