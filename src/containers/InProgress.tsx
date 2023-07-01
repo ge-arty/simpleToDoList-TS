@@ -1,3 +1,4 @@
+import React from "react";
 import Task from "../components/Task";
 import { TasksContainer, ContainerTitle } from "../styles/styles";
 
@@ -13,29 +14,31 @@ interface Task {
   status: TaskStatus;
 }
 
-interface FinishedProps {
+interface TasksProps {
   tasks: Task[];
   deleteTask: (taskId: number) => void;
+  moveTask: (taskId: number, status: TaskStatus) => void;
 }
 
-export default function Finished(props: FinishedProps): JSX.Element {
-  const { tasks, deleteTask } = props;
+export default function InProgress(props: TasksProps): JSX.Element {
+  const { tasks, deleteTask, moveTask } = props;
 
   return (
     <TasksContainer>
-      <ContainerTitle>Finished!</ContainerTitle>
+      <ContainerTitle>In Progress!</ContainerTitle>
       {tasks.length > 0 &&
         tasks.map((task) => {
-          if (task.status === TaskStatus.Finished) {
+          if (task.status === TaskStatus.InProgress) {
             return (
               <Task
-                key={task.id}
+                key={task.id + task.task}
                 task={task}
                 deleteTask={deleteTask}
-                moveTask={() => {}}
+                moveTask={moveTask}
               />
             );
-          } else return null;
+          }
+          return null;
         })}
     </TasksContainer>
   );

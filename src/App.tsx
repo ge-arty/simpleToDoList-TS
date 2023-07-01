@@ -1,27 +1,34 @@
 import { useState, useEffect, useCallback } from "react";
+import Input from "./containers/Input";
 import Tasks from "./containers/Tasks";
 import Finished from "./containers/Finished";
-import "./App.css";
-import Input from "./containers/Input";
+import InProgress from "./containers/InProgress";
+import { FlexContainer, ToDoApp, ToDoWrapper } from "./styles/styles";
+import useDetectDevice from "./hooks/useDetectDevice";
+
+enum TaskStatus {
+  ToDo = "ToDo",
+  InProgress = "InProgress",
+  Finished = "Finished",
+}
 
 interface Task {
   id: number;
   task: string;
-  isFinished: boolean;
+  status: TaskStatus;
 }
 
 function App(): JSX.Element {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const device = useDetectDevice();
 
-  // Component will Mount Data
   useEffect(() => {
-    const baseTasks: Task[] = [
-      { id: 1, task: "breakfast", isFinished: false },
-      { id: 2, task: "coding", isFinished: false },
-      { id: 3, task: "Play a Game!", isFinished: false },
-      { id: 4, task: "Workout", isFinished: true },
+    const tasks: Task[] = [
+      { id: 1, task: "Task 1", status: TaskStatus.ToDo },
+      { id: 2, task: "Task 2", status: TaskStatus.InProgress },
+      { id: 3, task: "Task 3", status: TaskStatus.Finished },
     ];
-    setTasks(baseTasks);
+    setTasks(tasks);
   }, []);
 
   // Adding Tasks to Do
@@ -29,7 +36,7 @@ function App(): JSX.Element {
     const newTask: Task = {
       id: tasks.length + 1,
       task: task,
-      isFinished: false,
+      status: TaskStatus.ToDo,
     };
 
     setTasks((prevTasks) => [...prevTasks, newTask]);
@@ -41,14 +48,21 @@ function App(): JSX.Element {
   }, []);
 
   // Moving Task to Finished or opposite
-  const moveTask = useCallback((taskId: number, isFinished: boolean) => {
+  const moveTask = useCallback((taskId: number, status: TaskStatus) => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) => {
         if (task.id === taskId) {
-          return {
-            ...task,
-            isFinished: !isFinished,
-          };
+          if (status === TaskStatus.ToDo) {
+            return {
+              ...task,
+              status: TaskStatus.InProgress,
+            };
+          } else if (status === TaskStatus.InProgress) {
+            return {
+              ...task,
+              status: TaskStatus.Finished,
+            };
+          }
         }
         return task;
       });
@@ -57,13 +71,20 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <div className="to-do-container">
-      <Input setTask={addTask} />
-      <div className="flex-container">
-        <Tasks tasks={tasks} deleteTask={deleteTask} moveTask={moveTask} />
-        <Finished tasks={tasks} deleteTask={deleteTask} moveTask={moveTask} />
-      </div>
-    </div>
+    <ToDoWrapper>
+      <ToDoApp>
+        <Input setTask={addTask} />
+        <FlexContainer $setColumn={device === "mobile" ? "column" : "row"}>
+          <Tasks tasks={tasks} deleteTask={deleteTask} moveTask={moveTask} />
+          <InProgress
+            tasks={tasks}
+            deleteTask={deleteTask}
+            moveTask={moveTask}
+          />
+          <Finished tasks={tasks} deleteTask={deleteTask} />
+        </FlexContainer>
+      </ToDoApp>
+    </ToDoWrapper>
   );
 }
 

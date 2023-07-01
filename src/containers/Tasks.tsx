@@ -1,29 +1,33 @@
 import Task from "../components/Task";
+import { TasksContainer, ContainerTitle } from "../styles/styles";
+
+enum TaskStatus {
+  ToDo = "ToDo",
+  InProgress = "InProgress",
+  Finished = "Finished",
+}
 
 interface Task {
   id: number;
   task: string;
-  isFinished: boolean;
+  status: TaskStatus;
 }
 
 interface TasksProps {
   tasks: Task[];
   deleteTask: (taskId: number) => void;
-  moveTask: (taskId: number, isFinished: boolean) => void;
+  moveTask: (taskId: number, status: TaskStatus) => void;
 }
 
 export default function Tasks(props: TasksProps): JSX.Element {
   const { tasks, deleteTask, moveTask } = props;
 
   return (
-    <div
-      style={tasks.length !== 0 ? { minHeight: "526px" } : { minHeight: "0px" }}
-      className="tasks-container"
-    >
-      <h1>Need to do!</h1>
+    <TasksContainer>
+      <ContainerTitle>Need to do!</ContainerTitle>
       {tasks.length > 0 &&
         tasks.map((task) => {
-          if (task.isFinished === false) {
+          if (task.status === TaskStatus.ToDo) {
             return (
               <Task
                 key={task.id + task.task}
@@ -35,6 +39,6 @@ export default function Tasks(props: TasksProps): JSX.Element {
           }
           return null;
         })}
-    </div>
+    </TasksContainer>
   );
 }

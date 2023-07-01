@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from "react";
+import { BtnMove, FormContainer, InputElement } from "../styles/styles";
 
 interface InputProps {
   setTask: (task: string) => void;
@@ -19,9 +20,9 @@ export default function Input(props: InputProps): JSX.Element {
   };
 
   return (
-    <form className="to-do-form" onSubmit={onSubmit}>
-      <input value={inputValue} type="text" onChange={onChange} />
-      <button type="submit">Add Task</button>
-    </form>
+    <FormContainer onSubmit={onSubmit}>
+      <InputElement value={inputValue} type="text" onChange={onChange} />
+      <BtnMove type="submit">Add Task</BtnMove>
+    </FormContainer>
   );
 }

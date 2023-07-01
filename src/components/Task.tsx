@@ -1,35 +1,57 @@
 import React from "react";
+import {
+  BtnDelete,
+  BtnMove,
+  TaskComponent,
+  TaskComponentBtnWrapper,
+} from "../styles/styles";
+
+enum TaskStatus {
+  ToDo = "ToDo",
+  InProgress = "InProgress",
+  Finished = "Finished",
+}
 
 interface TaskProps {
   task: {
     id: number;
     task: string;
-    isFinished: boolean;
+    status: TaskStatus;
   };
   deleteTask: (taskId: number) => void;
-  moveTask: (taskId: number, isFinished: boolean) => void;
+  moveTask: (taskId: number, status: TaskStatus) => void;
 }
 
 function Task(props: TaskProps): JSX.Element {
   const { task, deleteTask, moveTask } = props;
 
+  function getBackgroundColor(status: TaskStatus): string {
+    switch (status) {
+      case TaskStatus.ToDo:
+        return "blue";
+      case TaskStatus.InProgress:
+        return "#CAB522";
+      case TaskStatus.Finished:
+        return "green";
+      default:
+        return "black";
+    }
+  }
+
   return (
-    <div className="task-container">
+    <TaskComponent $background={getBackgroundColor(task.status)}>
       <p>
         {task.id}.{task.task}
       </p>
-      <div className="task-btn__wrapper">
-        <button
-          className="task-btn__remove"
-          onClick={() => deleteTask(task.id)}
-        >
-          Delete
-        </button>
-        <button onClick={() => moveTask(task.id, task.isFinished)}>
-          {task.isFinished ? "to Tasks" : "to Finished"}
-        </button>
-      </div>
-    </div>
+      <TaskComponentBtnWrapper>
+        <BtnDelete onClick={() => deleteTask(task.id)}>Delete</BtnDelete>
+        {task.status !== TaskStatus.Finished && (
+          <BtnMove onClick={() => moveTask(task.id, task.status)}>
+            {task.status === TaskStatus.ToDo ? "Start" : "Finished"}
+          </BtnMove>
+        )}
+      </TaskComponentBtnWrapper>
+    </TaskComponent>
   );
 }
 
